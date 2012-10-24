@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">AirDB</string>
+
+  <string name="on">ON</string>
+  <string name="off">OFF</string>
+</resources>

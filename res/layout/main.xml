@@ -15,4 +15,10 @@
 
     android:id="@+id/btn_on_off"
     />
+  <TextView
+    android:id="@+id/textView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_below="@id/btn_on_off" />
 </RelativeLayout>

@@ -6,13 +6,19 @@ import android.content.Context;
 import android.view.View;
 import shurizzle.airdb.views.Switch;
 import java.lang.InterruptedException;
+import java.util.Enumeration;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+import java.net.SocketException;
 
 import android.widget.Toast;
+import android.widget.TextView;
 
 public class airctivity extends Activity
 {
   private static Context context;
   private Switch switchButton;
+  private TextView textView;
 
   /** Called when the activity is first created. */
   @Override
@@ -26,6 +32,7 @@ public class airctivity extends Activity
     setContentView(R.layout.main);
 
     switchButton = (Switch) findViewById(R.id.btn_on_off);
+    textView = (TextView) findViewById(R.id.textView);
 
     if (RootCommand.isGranted()) {
       switchButton.setOnClickListener(new View.OnClickListener()
@@ -59,12 +66,35 @@ public class airctivity extends Activity
     setButton();
   }
 
+  public String getLocalIpAddress() {
+    try {
+      for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+        NetworkInterface intf = en.nextElement();
+        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+          InetAddress inetAddress = enumIpAddr.nextElement();
+          if (!inetAddress.isLoopbackAddress()) {
+            return inetAddress.getHostAddress().toString();
+          }
+        }
+      }
+    } catch (SocketException ex) {
+    }
+
+    return null;
+  }
+
   private void setButton()
   {
     if (getProperty("service.adb.tcp.port", "-1").equals("5555")) {
       switchButton.setChecked(true);
+      String ip = getLocalIpAddress();
+      if (ip != null) {
+        textView.setText(ip);
+        textView.append(":5555");
+      }
     } else {
       switchButton.setChecked(false);
+      textView.setText("");
     }
   }
 

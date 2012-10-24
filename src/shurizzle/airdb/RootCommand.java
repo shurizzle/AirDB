@@ -3,6 +3,7 @@ package shurizzle.airdb;
 import java.util.StringTokenizer;
 import java.lang.Process;
 import java.lang.Runtime;
+import java.lang.StringBuilder;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,17 +17,17 @@ public class RootCommand
 
   public static String shellEscape(String[] args)
   {
-    String res = "";
+    StringBuilder res = new StringBuilder();
 
     for (int i = 0; i < args.length; i++) {
-      res += shellEscapeWord(args[i]);
+      res.append(shellEscapeWord(args[i]));
 
       if (i != args.length - 1) {
-        res += " ";
+        res.append(' ');
       }
     }
 
-    return res;
+    return res.toString();
   }
 
   public static String shellEscapeWord(String word)
@@ -34,20 +35,20 @@ public class RootCommand
     if (word.isEmpty())
       return "''";
 
-    String res = "";
+    StringBuilder res = new StringBuilder();
     StringTokenizer toks = new StringTokenizer(word, "'", true);
 
     for (int i = 0; i < toks.countTokens(); i++) {
       String tok = toks.nextToken();
 
       if (tok.equals("'")) {
-        res += "\\'";
+        res.append("\\'");
       } else {
-        res += "'" + tok + "'";
+        res.append('\'').append(tok).append('\'');
       }
     }
 
-    return res;
+    return res.toString();
   }
 
   public static Process vexec(String... args)
@@ -65,7 +66,8 @@ public class RootCommand
     try {
       Process proc = Runtime.getRuntime().exec("su");
       DataOutputStream writer = new DataOutputStream(proc.getOutputStream());
-      writer.writeBytes(cmd + "\n");
+      writer.writeBytes(cmd);
+      writer.writeBytes("\n");
       writer.flush();
       writer.close();
       return proc;

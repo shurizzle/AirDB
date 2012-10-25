@@ -10,12 +10,14 @@ import java.util.Enumeration;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.regex.Pattern;
 
 import android.widget.Toast;
 import android.widget.TextView;
 
 public class airctivity extends Activity
 {
+  private static Pattern ipv4Pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){0,3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
   private static Context context;
   private Switch switchButton;
   private TextView textView;
@@ -66,16 +68,27 @@ public class airctivity extends Activity
     setButton();
   }
 
+  public static boolean isIpv4(InetAddress addr)
+  {
+    return ipv4Pattern.matcher(addr.getHostAddress().toString()).matches();
+  }
+
   public String getLocalIpAddress() {
     try {
+      InetAddress res = null;
       for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
         NetworkInterface intf = en.nextElement();
         for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
           InetAddress inetAddress = enumIpAddr.nextElement();
           if (!inetAddress.isLoopbackAddress()) {
-            return inetAddress.getHostAddress().toString();
+            if (isIpv4(inetAddress))
+              return inetAddress.getHostAddress().toString();
+            else
+              res = inetAddress;
           }
         }
+        if (res != null)
+          return res.getHostAddress().toString();
       }
     } catch (SocketException ex) {
     }

@@ -14,27 +14,34 @@ public class SystemProperty
   private SystemProperty() {
   }
 
-  public static String get(Context context, String key, String def)
-  {
-    String ret = def;
+  private static Class SYSPROP = null;
+  private static Method GET_METHOD = null;
 
+  static {
     try {
-      ClassLoader cl = context.getClassLoader();
+      ClassLoader cl = SystemProperty.class.getClassLoader();
       @SuppressWarnings("rawtypes")
-      Class SysProp = cl.loadClass("android.os.SystemProperties");
+      Class SYSPROP = cl.loadClass("android.os.SystemProperties");
 
       @SuppressWarnings("rawtypes")
       Class[] paramTypes = new Class[2];
       paramTypes[0] = String.class;
       paramTypes[1] = String.class;
 
-      Method get = SysProp.getMethod("get", paramTypes);
+      GET_METHOD = SYSPROP.getMethod("get", paramTypes);
+    } catch (Exception e) {}
+  }
 
+  public static String get(String key, String def)
+  {
+    String ret = def;
+
+    try {
       Object[] params = new Object[2];
       params[0] = new String(key);
       params[1] = new String(def);
 
-      ret = (String) get.invoke(SysProp, params);
+      ret = (String) GET_METHOD.invoke(SYSPROP, params);
     } catch (Exception e) {
       ret = def;
     }
@@ -42,8 +49,7 @@ public class SystemProperty
     return ret;
   }
 
-  @SuppressWarnings("unused")
-  public static boolean set(Context context, String key, String val)
+  public static boolean set(String key, String val)
   {
     Process proc = RootCommand.vexec("setprop", key, val);
 

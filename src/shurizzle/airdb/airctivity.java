@@ -42,9 +42,9 @@ public class airctivity extends Activity
             @Override
             public void onClick(View v) {
               if (switchButton.isChecked()) {
-                setProperty("service.adb.tcp.port", "5555");
+                SystemProperty.set("service.adb.tcp.port", "5555");
               } else {
-                setProperty("service.adb.tcp.port", "-1");
+                SystemProperty.set("service.adb.tcp.port", "-1");
               }
               try {
                 RootCommand.vexec("stop", "adbd").waitFor();
@@ -98,7 +98,7 @@ public class airctivity extends Activity
 
   private void setButton()
   {
-    if (getProperty("service.adb.tcp.port", "-1").equals("5555")) {
+    if (SystemProperty.get("service.adb.tcp.port", "-1").equals("5555")) {
       switchButton.setChecked(true);
       String ip = getLocalIpAddress();
       if (ip != null) {
@@ -109,15 +109,5 @@ public class airctivity extends Activity
       switchButton.setChecked(false);
       textView.setText("");
     }
-  }
-
-  public void setProperty(String key, String val)
-  {
-    SystemProperty.set(context, key, val);
-  }
-
-  public String getProperty(String key, String def)
-  {
-    return SystemProperty.get(context, key, def);
   }
 }

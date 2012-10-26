@@ -110,13 +110,13 @@ public class airctivity extends Activity
           InetAddress inetAddress = enumIpAddr.nextElement();
           if (!inetAddress.isLoopbackAddress()) {
             if (isIpv4(inetAddress))
-              return inetAddress.getHostAddress().toString();
+              return inetAddress.getHostAddress();
             else
               res = inetAddress;
           }
         }
         if (res != null)
-          return res.getHostAddress().toString();
+          return res.getHostAddress().split("%")[0];
       }
     } catch (SocketException ex) {
     }

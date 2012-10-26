@@ -11,12 +11,20 @@ import java.net.NetworkInterface;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.regex.Pattern;
+import android.view.Window;
+import android.view.Menu;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 
 import android.widget.Toast;
 import android.widget.TextView;
 
 public class airctivity extends Activity
 {
+  Intent i = new Intent(Intent.ACTION_VIEW,
+      Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD9PLW4LYJXQA"));
   private static Pattern ipv4Pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){0,3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
   private static Context context;
   private Switch switchButton;
@@ -31,6 +39,7 @@ public class airctivity extends Activity
     this.setTheme(R.style.AppThemeDark);
 
     super.onCreate(savedInstanceState);
+    requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.main);
 
     switchButton = (Switch) findViewById(R.id.btn_on_off);
@@ -66,6 +75,25 @@ public class airctivity extends Activity
 
 
     setButton();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu)
+  {
+    menu.add("Donate").
+      setIcon(android.R.drawable.btn_star).
+      setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      @Override
+      public boolean onMenuItemClick(MenuItem item) {
+        try {
+          startActivity(i);
+        } catch (Exception e) {
+          Toast.makeText(airctivity.this, "Browser not found.", Toast.LENGTH_SHORT);
+        }
+        return true;
+      }
+    });
+    return true;
   }
 
   public static boolean isIpv4(InetAddress addr)
